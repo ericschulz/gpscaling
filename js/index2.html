@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Structural Bandit Experiment">
+    <meta name="author" content="Eric Schulz">
+    <meta charset="utf-8">
+    <title>Speedy choices</title>
+    <script src='https://cdn.firebase.com/js/client/1.1.1/firebase.js'></script>
+    <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script> 
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script> 
+    <link href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link href="js/bootstrap.css" rel="stylesheet" type="text/css">
+ </head>
+	 
+	<div class="container" >
+	    
+	   <!--First page contains Welcome-->   
+	   <div id="page1" style="display:block">
+	     <h3><font FACE="bookman">Speedy choices</font></h3>
+	     <p> This study is part of a research project conducted by Eric Schulz. </p>
+	     <p> If you have any questions, please contact: <strong>ericschulz@fas.harvard.edu</strong></p>
+	     <button type="button" name="button"; onclick="clickStart('page1','page2')"; >Continue</button>
+	   </div>
+
+		<!--Second page contains Concent form-->
+	   <div id="page2" style="display:none">
+	   		<br> 
+		   	<h4><center>Statement of Informed Consent</center></h4>
+		   	<p><center>Please consider this information carefully before deciding whether to participate in this research.</center></p>
+		    <p><b>Purpose of the research:</b> To examine the way people complete patterns under time pressure.</p>
+		    <p><b>What you will do in this research:</b> Patterns (images) will be presented on the computer and you will be asked to choose between two different points fitting into shown patterns.</p>
+		    <p><b>Time required: </b> Participation will take up to 40 minutes to complete.</p>
+		    <p><b>Risks:</b> No risks involved.</p>
+		    <p><b>Compensation:</b> You will receive $2.00 in compensation plus up to $4.00 in bonus for your performance on the task.</p>
+		    <p><b>Confidentiality:</b>  Your participation in this study will remain confidential. Your MTurk worker IDs will NOT be shared with anyone outside of the research team. Your de-identified data may be shared with other researchers and used in future projects.</p>
+			<p><b>Participation and withdrawal: </b>Your participation in this study is completely voluntary and you may refuse to participate or you may choose to withdraw at any time without penalty or loss of benefits to which you are otherwise entitled.</p>
+			<p><b>How to contact the researchers: </b>If you have questions or concerns about your participation or payment, or want to request a summary of research findings, please contact Samuel Gershman, gershman@fas.harvard.edu, (773) 607-9817.</p>
+			<p><b>Whom to contact about your rights as a participant in this research:</b> For questions, concerns, suggestions, or complaints that have not been or cannot be addressed by the researcher, or to report research-related harm, please contact the Committee on the Use of Human Subjects, Richard A. and Susan F. Smith Campus Center, 1350 Massachusetts Avenue, Suite 935, Cambridge, MA 02138; Email: cuhs@harvard.edu</p>
+			<p>Please print or save a copy of this form for your records.</p>
+			<p><b>Agreement:  </b></p>
+			<div style="margin-left:30px;margin-right:30px"> <p>The nature and purpose of this research have been sufficiently explained and I agree to participate in this study. I understand that I am free to withdraw at any time without incurring any penalty.</p>
+			<p>Please consent by clicking the button below to continue. Otherwise, please exit the study at this time. </p>
+			<button type="button" name="button"; onclick="clickStart('page2','page3')"; >Agree</button>
+			</div>
+			<br><br>
+	    </div>
+
+		<!--Third page contains Overview-->
+		<div id="page3" style="display:none">
+		   <br>
+		     <p><b>Overview:</b></p>
+			 <ul>
+			    <li>You will repeatedly choose between two dots, one green and one red, that fit into a cloud of dots forming a pattern.</li>
+			    <li>There will be 200 trials in total. On every trial, you can gain time points. Time points will later be exchanged to a monetary bonus. Your goal is to earn as many time points as possible by choosing the best fitting dot as quickly as possible. The best fitting dot is the one that better matches with the pattern that has been produced by all other dots.</li>
+			    <li>Which dot you choose is up to you, but one of them fits better with the underlying pattern of all dots. Note that which dot fits better can change on every trial.</li>
+			    <li>You can choose a dot by pressing the 'O' or the 'P' key. The green dot is selected by pressing 'O'; the red dot is selected by pressing 'P'.</li>
+			    <li>You will gain time points for every correct choice. You will gain more time points, the faster you choose the correct dot. If you chose the incorrect dot, you will not gain time points.</li>
+			    <li>At the end of the experiment, you will see how much money you have earned. The total amount will depend on how often you chose correct dots as well as how quickly you chose them, as indicated by your average time points. Your average time points will be converted into money, and you will receive 4 Cents for every time point. You will be paid $2.00 and a performance-dependent bonus of up to $4.00.</li>
+			 </ul>
+		   <br>			   
+		   <button type="button" name="button"; onclick="clickStart('page3','page5')"; >Go to next page</button>
+		</div>
+
+		<!--Fifth page contains keyboard layout-->
+		<div id="page5" style="display:none">
+			<br>
+				<p><b>Here is an example of one trial:</b></p>
+					 <ul>
+					    <li>You start a trial by pressing the space bar.</li>
+					    <img src="example1.png" width="150" ><br><br>
+					    <li>Once a trial has started, you will see a fixation cross. Please look at the fixation cross until it disappears.</li>
+   					    <img src="example2.png" width="150" ><br><br>
+					    <li>Once the fixation cross disappeared, you will see the pattern of the current trial, marked by dots in a graph.</li>
+   					    <img src="example3.png" width="150" ><br><br>
+					    <li>After 1 second, a vertical line appears and two dots, a red and a green one, are placed on that line. It is your task to choose the better fitting dot, that is the dot that better matches with the overall pattern, as quickly as possible. You can choose the green dot by pressing 'O'. You can choose the red dot by pressing 'P'.</li>
+   					    <img src="example4.png" width="150" ><br><br>
+					    <li>If you choose the correct dot, you will get time points which will be later exchanged into money. You get more time points the faster you choose the correct dot.</li>
+  					    <img src="example5.png" width="150" ><br><br>
+					    <li>If you choose the incorrect dot, then you will not get any time points on that trial.</li>
+   					    <img src="example6.png" width="150" ><br><br>
+					</ul>
+				<br>
+				<button type="button" name="button"; onclick="clickStart('page5','page6')"; >Go to next page</button>  
+			<br>
+		</div>
+
+		<!--Sixth page contains comprehension check-->
+		<div id="page6" style="display:none">
+		    <fieldset>
+			    <legend>Please answer a few questions about this study before proceeding.</legend>
+			    <fieldset style="float:left;width:400px;margin:5px">
+			        What is your task in this study?<br>
+			        <input type="radio" name="q1"  >Choose the best fitting dot.<br>
+			        <input type="radio" name="q1" id="icheck1" > Choose the best fitting dot as quickly as possible.<br>
+			        <input type="radio" name="q1" > Choose as quickly as possible.<br>
+			        <input type="radio" name="q1" > I do not know.<br>
+			    </fieldset>
+			    <fieldset style="float:left;width:400px;margin:5px">
+			        How many trials will there be in total?<br>
+			        <input type="radio" name="q2"> 50 <br>
+			        <input type="radio" name="q2"> 100 <br>
+			        <input type="radio" name="q2"  id="icheck2"> 200<br>
+			        <input type="radio" name="q2"> 500 <br>
+			    </fieldset>
+			    <fieldset style="float:left;width:400px;margin:5px">
+			         How do you select one of the points?<br>
+			        <input type="radio" name="q3"               >  
+			         By clicking on them.<br>
+			        <input type="radio" name="q3"               > 
+			         By pressing the left or the right arrow key.<br>
+			        <input type="radio" name="q3" id="icheck3"                > 
+			         By pressing either 'O' or 'P' on the keyboard.<br>
+			        <input type="radio" name="q3" > 
+			         By pressing either 'W' or 'E' on the keyboard.<br>
+			    </fieldset>
+		    </fieldset>
+		    <br><br><br><br>
+		    <p>You will only be directed to the next page if you manage to answer all of the questions correctly.</p>
+		    <button type="button" name="button"; onclick="instructioncheck()"; >Check answers</button>  
+		</div>
+
+		<!--Seventh page contains task-->
+		<div id="page7" style="display:none">
+			<h1> <font size="4">Choose the best fitting dot as quickly as possible.</font> </h1>
+			<div id="explainshow" style="display:block">
+				<p> <b>Summarized Instructions:</b></p>
+				<p><b>I.</b> There are 2 different dots shown that could fit with the pattern produced by all other dots. </p>
+				<p><b>II.</b> It is your task to choose the best fitting dot as quickly as possible by either pressing 'O' for the green dot or 'P' for the red dot.</p>
+				<p><b>III.</b> For every correct choice, you will get time points. You will get more time points, the faster you chose the correct point. Your goal is to get as many time points as possible.</p>
+				<button type="button" name="button"; onclick="clickStart('explainshow','explainhide')"; >Hide guidelines</button>
+			</div>
+			<div id="explainhide" style="display:none">
+				<button type="button" name="button"; onclick="clickStart('explainhide','explainshow')"; >Show guidelines</button>
+			</div>
+			<center>
+				<h3><div id="remain">Number of trials left: 200</div></h3>
+				<div id='pattern' style="display: inline"></div>
+     			<br>        
+				<h3><div id="fingerpos" style="display:block"></div></h3>
+			</center>   
+		</div>
+
+	   	<!--Eighth page contains demographics-->
+		<div id="page8" style="display:none">
+			<h1> <font size="4">Please tell us something about yourself.</font> </h1>
+			<fieldset>
+				<div style="float:left;width:400px;margin:5px">
+					How old are you?<br>
+					<input id="age" type="radio" name="age" onclick="setage(20)" >18-21<br>
+					<input id="age" type="radio" name="age" onclick="setage(25)" >21-25<br>
+					<input id="age" type="radio" name="age" onclick="setage(30)" >26-30<br>
+					<input id="age" type="radio" name="age" onclick="setage(35)" >31-35<br>
+					<input id="age" type="radio" name="age" onclick="setage(40)" >35-40<br>
+					<input id="age" type="radio" name="age" onclick="setage(45)" >40-50<br>
+					<input id="age" type="radio" name="age" onclick="setage(50)" >above 50<br>
+				</div>
+				<div style="float:left;width:400px;margin:5px">
+					What's your gender?<br>
+					<input id="gender" type="radio" name="gender" onclick="setgender(0)" >Female<br>
+					<input id="gender" type="radio" name="gender" onclick="setgender(1)" >Male<br>
+				</div>
+			</fieldset>
+			<div style="width:50px;margin:0 auto">
+				<button type="button" name="button"; onclick="mysubmit()"; >Done</button>
+			</div>
+		</div>
+
+		<!--Ninth page contains results and code word-->
+		<div id="page9" style="display:none">
+		   <h1><font size="4">Your performance and reward:</font></h1>
+		   <div id="result"></div><br>
+		   <div id="money"></div><br>
+		   <p>Thank you very much for participating in our study.</p>
+		   <p>Your Mechanical Turk Password is:<br> <b>choosesapattern22</b></p><br>
+		   <p>In case you have any questions, please contact us via our MTurk account or write an email to<br> <b>ericschulz@fas.harvard.edu</b></p>
+		</div>
+	</div>
+    <script src="js/gpscaling1.js" charset="utf-8"></script>
+    </body>
+</html>
