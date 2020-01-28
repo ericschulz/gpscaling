@@ -1,10 +1,15 @@
+#Experiment 1
+#GP scaling laws
+#Eric and Charley
 #house keeping
 rm(list=ls())
 
-packages <- c('MASS', 'jsonlite', 'scales', 'ggplot2', 'gridExtra', 'lsr', 'plyr')
-#load them
-lapply(packages, library, character.only = TRUE)
+packages <- c('MASS', 'jsonlite', 'scales', 'ggplot2', 'gridExtra', 'lsr', 'plyr', 'ggbeeswarm')
+invisible(lapply(packages, library, character.only = TRUE))#load them
 
+################################################
+#Data processing
+################################################
 #read in data
 dat<-read.csv("data/exp1data.csv")
 
@@ -20,49 +25,51 @@ se<-function(x){sd(x)/sqrt(length(x))}
 #dodge
 pd <- position_dodge(.2)
 
-#TIME PER CONDITION
-dp<-ddply(dat, ~cond, summarize, mu=mean(t), se=1.96*se(t))
-
+#########TIME PER CONDITION############
+dp<-ddply(dat, ~cond, summarize, mu=mean(t), se=1.96*se(t)) #aggregate data
+dpid <- ddply(dat, ~cond+id, summarize, mu = mean(t)) #individual data
 limits <- aes(ymax = mu + se, ymin=mu - se)
 dp$cond<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
-p1 <- ggplot(dp, aes(y=mu, x=cond, fill=cond)) + 
+p1 <- ggplot(dp, aes(y=mu, x=cond, fill=cond, color =cond)) + 
   #bars
-  geom_bar(position="dodge", stat="identity")+
+  #geom_bar(position="dodge", stat="identity")+
   #geom_point(mapping = aes(x = which, y = participants), position = 'dodge')+
   #0 to 1
   #golden ratio error bars
   geom_errorbar(limits, position="dodge", width=0.31)+
   # #point size
-  # geom_point(size=3)+
+  geom_point(size=3)+
   scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]))+
   #title
-  theme_minimal() +xlab("Predictor")+ylab("Time in ms")+
+  theme_classic() +xlab("Predictor")+ylab("Time in ms")+
   #scale_y_continuous(limits = c(0,1.0), expand = c(0, 0)) +
-  ggtitle("(a) Reaction times")+
+  ggtitle("(a) Condition")+
   #adjust text size
   theme(text = element_text(size=18,  family="sans"))+
   theme(legend.position = "none")+xlab("Condition")
-
 p1
 
 
 #ACUURACY PER CONDITION
 dp<-ddply(dat, ~cond, summarize, mu=mean(correct), se=1.96*se(correct))
 dp$cond<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
-p2 <- ggplot(dp, aes(y=mu, x=cond, fill=cond)) + 
+p2 <- ggplot(dp, aes(y=mu, x=cond, color = cond, fill=cond)) + 
   #bars
-  geom_bar(position="dodge", stat="identity")+
+  #Geom_bar(position="dodge", stat="identity")+
   #geom_point(mapping = aes(x = which, y = participants), position = 'dodge')+
   #0 to 1
   #golden ratio error bars
   geom_errorbar(limits, position="dodge", width=0.31)+
   # #point size
-  # geom_point(size=3)+
+  geom_point(size=3)+
   scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]))+
   #title
-  theme_minimal() +xlab("Predictor")+ylab("P(correct)")+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
+  theme_classic() +xlab("Predictor")+ylab("P(correct)")+
   #scale_y_continuous(limits = c(0,1.0), expand = c(0, 0)) +
-  ggtitle("(b) Accuracy")+
+  #ggtitle("Accuracy")+
   #adjust text size
   theme(text = element_text(size=18,  family="sans"))+
   theme(legend.position = "none")+xlab("Condition")
@@ -80,17 +87,17 @@ p3<-ggplot(dp, aes(x=n, y=mu, col=Condition)) +
   geom_point(position =pd)+
   #error bars
   geom_errorbar(aes(ymin=mu-se, ymax=mu+se), width=0, size=1, position=pd) +
-  scale_color_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name='')+
   #lines
   geom_line(position=pd, size=1.2) +
   #classic theme, legend on bottom
-  theme_minimal()+
+  theme_classic()+
   theme(text = element_text(size=18,  family="sans"))+
   scale_x_continuous(breaks = round(seq(min(0), max(50), by = 10),1)) +
-  ylab("Time in ms")+xlab("Number of data points")+
-  theme(legend.position = "top")+
+  ylab("Time in ms")+xlab("Data points")+
+  theme(legend.position = c(1,1.2), legend.justification = c(1,1), legend.background=element_blank())+
   #change theme
-  ggtitle("(c) Sample size and RT")
+  ggtitle("(b) Sample size")
 p3
 
 
@@ -103,17 +110,18 @@ p4<-ggplot(dp, aes(x=n, y=mu, col=Condition)) +
   geom_point(position =pd)+
   #error bars
   geom_errorbar(aes(ymin=mu-se, ymax=mu+se), width=0, size=1, position=pd) +
-  scale_color_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name='')+
   #lines
   geom_line(position=pd, size=1.2) +
   #classic theme, legend on bottom
-  theme_minimal()+
+  theme_classic()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
   theme(text = element_text(size=18,  family="sans"))+
   scale_x_continuous(breaks = round(seq(min(0), max(50), by = 10),1)) +
-  ylab("P(correct)")+xlab("Number of data points")+
-  theme(legend.position = "top")+
+  ylab("P(correct)")+xlab("Data points")+ #+
+  theme(legend.position = c(1,0), legend.justification = c(1,0), legend.background=element_blank())
   #change theme
-  ggtitle("(d) Sample size and Accuracy")
+  
 p4
 
 
@@ -123,38 +131,41 @@ dp<-ddply(dat, ~near+cond, summarize, mu=mean(t), se=se(t))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$near<-as.factor(dp$near)
-p5<-ggplot(dp, aes(x=near, y=mu, fill=Condition)) +
+p5<-ggplot(dp, aes(x=paste0(near,"%"), y=mu, color=Condition)) +
   #error bars
-  scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name = '')+
   #lines
-  geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
-  theme_minimal()+
+  #geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
+  geom_point(position=pd)+
+  theme_classic()+
   geom_errorbar(aes(ymin=mu-1.96*se, ymax=mu+1.96*se), width=0.25, size=1, position=pd) +
   theme(text = element_text(size=18,  family="sans"))+
-  ylab("Time in ms")+xlab("Percentage of nearby points")+
-  theme(legend.position = "top")+
+  ylab("Time in ms")+xlab("Nearby points")+ ggtitle("(c) Nearby points")+
+  theme(legend.position = c(1,1.2), legend.justification = c(1,1), legend.background=element_blank())
   #change theme
-  ggtitle("(e) Nearby points and RT")
+  #scale_x_discrete(labels = c("30\%", "70\%"))+
+  
 p5
-
 
 #ACCURACY PER CONDITION AND NEARBY POINTS
 dp<-ddply(dat, ~near+cond, summarize, mu=mean(correct), se=se(correct))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$near<-as.factor(dp$near)
-p6<-ggplot(dp, aes(x=near, y=mu, fill=Condition)) +
+p6<-ggplot(dp, aes(x=paste0(near,"%"), y=mu, color=Condition)) +
   #error bars
-  scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name = '')+
   #lines
-  geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
-  theme_minimal()+
+  #geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
+  geom_point(position=pd)+
+  theme_classic()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
   geom_errorbar(aes(ymin=mu-1.96*se, ymax=mu+1.96*se), width=0.25, size=1, position=pd) +
   theme(text = element_text(size=18,  family="sans"))+
-  ylab("P(correct)")+xlab("Percentage of nearby points")+
-  theme(legend.position = "top")+
+  ylab("P(correct)")+xlab("Nearby points")+ #ggtitle("Nearby points")+
+  theme(legend.position = c(0,1.2), legend.justification = c(0,1), legend.background=element_blank())
   #change theme
-  ggtitle("(f) Nearby points and Accuracy")
+  
 p6
 
 
@@ -163,18 +174,19 @@ dp<-ddply(dat, ~l+cond, summarize, mu=mean(t), se=se(t))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$l<-as.factor(dp$l)
-p7<-ggplot(dp, aes(x=l, y=mu, fill=Condition)) +
+p7<-ggplot(dp, aes(x=l, y=mu, color=Condition)) +
   #error bars
-  scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name = '')+
   #lines
-  geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
-  theme_minimal()+
+  #geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
+  geom_point(position=pd)+
+  theme_classic()+
   geom_errorbar(aes(ymin=mu-1.96*se, ymax=mu+1.96*se), width=0.25, size=1, position=pd) +
   theme(text = element_text(size=18,  family="sans"))+
   ylab("Time in ms")+xlab(expression(lambda))+
-  theme(legend.position = "top")+
+  theme(legend.position = c(1,0), legend.justification = c(1,0), legend.background=element_blank())+
   #change theme
-  ggtitle("(g) Smoothness and RT")
+  ggtitle("(d) Smoothness")
 p7
 
 
@@ -183,22 +195,24 @@ dp<-ddply(dat, ~l+cond, summarize, mu=mean(correct), se=se(correct))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$l<-as.factor(dp$l)
-p8<-ggplot(dp, aes(x=l, y=mu, fill=Condition)) +
+p8<-ggplot(dp, aes(x=l, y=mu, color=Condition)) +
   #error bars
-  scale_fill_manual(values = c(cbPalette[c(7,6)]))+
+  scale_color_manual(values = c(cbPalette[c(7,6)]), name = '')+
   #lines
-  geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
-  theme_minimal()+
+  #geom_bar(stat="identity", position="dodge")+  #classic theme, legend on bottom
+  geom_point(position=pd)+
+  theme_classic()+
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1))+
   geom_errorbar(aes(ymin=mu-1.96*se, ymax=mu+1.96*se), width=0.25, size=1, position=pd) +
   theme(text = element_text(size=18,  family="sans"))+
-  ylab("P(correct)")+xlab(expression(lambda))+
-  theme(legend.position = "top")+
+  ylab("P(correct)")+xlab(expression(lambda))+ #ggtitle("Smoothness and Accuracy")+
+  theme(legend.position = c(1,0), legend.justification = c(1,0), legend.background=element_blank())
   #change theme
-  ggtitle("(h) Smoothness and Accuracy")
+  
 p8
 
 #SAVE PLOT
-library(gridExtra)
-pdf("results.pdf", width=10, height=14)
-grid.arrange(p1,p2,p3,p4,p5, p6,p7,p8, ncol=2)
-dev.off()
+library(cowplot)
+p <- cowplot::plot_grid(p1,p3, p5, p7,p2, p4,p6,p8, ncol=4)
+p
+ggsave('plots/exp1Results.pdf', width = 14, height = 6, units = 'in')
