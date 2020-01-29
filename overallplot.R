@@ -13,8 +13,16 @@ invisible(lapply(packages, library, character.only = TRUE))#load them
 #read in data
 dat<-read.csv("data/exp1data.csv")
 
-#removing outliers
-dat<-subset(dat, t>=250 & t<=5000)
+#Apply Tukey Outlier removal criteria on log transformed RTs
+uppertquartile <- quantile(log(dat$t), probs=c(.25, .75), na.rm=T)[2] #quantiles
+lowertquartile <- quantile(log(dat$t), probs=c(.25, .75), na.rm=T)[1] 
+H <- 1.5 * IQR(log(dat$t), na.rm = T)
+upperLimit <- uppertquartile + H
+lowerLimit <- lowertquartile - H
+dat <- subset(dat, log(t)>=lowerLimit & log(t)<=upperLimit)
+
+#Eric's outlier criteria?
+#dat<-subset(dat, t>=250 & t<=5000)
 
 #color palette
 cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
@@ -26,8 +34,8 @@ se<-function(x){sd(x)/sqrt(length(x))}
 pd <- position_dodge(.2)
 
 #########TIME PER CONDITION############
-dp<-ddply(dat, ~cond, summarize, mu=mean(t), se=1.96*se(t)) #aggregate data
-dpid <- ddply(dat, ~cond+id, summarize, mu = mean(t)) #individual data
+dp<-ddply(dat, ~cond, plyr::summarize, mu=mean(t), se=1.96*se(t)) #aggregate data
+dpid <- ddply(dat, ~cond+id, plyr::summarize, mu = mean(t)) #individual data
 limits <- aes(ymax = mu + se, ymin=mu - se)
 dp$cond<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 p1 <- ggplot(dp, aes(y=mu, x=cond, fill=cond, color =cond)) + 
@@ -36,9 +44,9 @@ p1 <- ggplot(dp, aes(y=mu, x=cond, fill=cond, color =cond)) +
   #geom_point(mapping = aes(x = which, y = participants), position = 'dodge')+
   #0 to 1
   #golden ratio error bars
-  geom_errorbar(limits, position="dodge", width=0.31)+
+  geom_errorbar(limits, position="dodge", width=0.25, size = 1)+
   # #point size
-  geom_point(size=3)+
+  geom_point()+
   scale_fill_manual(values = c(cbPalette[c(7,6)]))+
   scale_color_manual(values = c(cbPalette[c(7,6)]))+
   #title
@@ -52,7 +60,7 @@ p1
 
 
 #ACUURACY PER CONDITION
-dp<-ddply(dat, ~cond, summarize, mu=mean(correct), se=1.96*se(correct))
+dp<-ddply(dat, ~cond, plyr::summarize, mu=mean(correct), se=1.96*se(correct))
 dp$cond<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 p2 <- ggplot(dp, aes(y=mu, x=cond, color = cond, fill=cond)) + 
   #bars
@@ -60,9 +68,9 @@ p2 <- ggplot(dp, aes(y=mu, x=cond, color = cond, fill=cond)) +
   #geom_point(mapping = aes(x = which, y = participants), position = 'dodge')+
   #0 to 1
   #golden ratio error bars
-  geom_errorbar(limits, position="dodge", width=0.31)+
+  geom_errorbar(limits, position="dodge", width=0.25, size = 1)+
   # #point size
-  geom_point(size=3)+
+  geom_point()+
   scale_fill_manual(values = c(cbPalette[c(7,6)]))+
   scale_color_manual(values = c(cbPalette[c(7,6)]))+
   #title
@@ -79,7 +87,7 @@ p2
 
 
 #TIME PER CONDITION AND N
-dp<-ddply(dat, ~n+cond, summarize, mu=mean(t), se=se(t))
+dp<-ddply(dat, ~n+cond, plyr::summarize, mu=mean(t), se=se(t))
 pd <- position_dodge(.2)
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 
@@ -102,7 +110,7 @@ p3
 
 
 #ACCURACY PER CONDITION AND N
-dp<-ddply(dat, ~n+cond, summarize, mu=mean(correct), se=se(correct))
+dp<-ddply(dat, ~n+cond, plyr::summarize, mu=mean(correct), se=se(correct))
 pd <- position_dodge(.2)
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 
@@ -127,7 +135,7 @@ p4
 
 
 #TIME PER CONDITION AND NEARBY POINTS
-dp<-ddply(dat, ~near+cond, summarize, mu=mean(t), se=se(t))
+dp<-ddply(dat, ~near+cond, plyr::summarize, mu=mean(t), se=se(t))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$near<-as.factor(dp$near)
@@ -148,7 +156,7 @@ p5<-ggplot(dp, aes(x=paste0(near,"%"), y=mu, color=Condition)) +
 p5
 
 #ACCURACY PER CONDITION AND NEARBY POINTS
-dp<-ddply(dat, ~near+cond, summarize, mu=mean(correct), se=se(correct))
+dp<-ddply(dat, ~near+cond, plyr::summarize, mu=mean(correct), se=se(correct))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$near<-as.factor(dp$near)
@@ -170,7 +178,7 @@ p6
 
 
 #TIME PER CONDITION AND SMOOTHNESS
-dp<-ddply(dat, ~l+cond, summarize, mu=mean(t), se=se(t))
+dp<-ddply(dat, ~l+cond, plyr::summarize, mu=mean(t), se=se(t))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$l<-as.factor(dp$l)
@@ -191,7 +199,7 @@ p7
 
 
 #ACCURACY PER CONDITION AND SMOOTHNESS
-dp<-ddply(dat, ~l+cond, summarize, mu=mean(correct), se=se(correct))
+dp<-ddply(dat, ~l+cond, plyr::summarize, mu=mean(correct), se=se(correct))
 dp$Condition<-mapvalues(dp$cond, c("cued", "uncued"), c("Cued", "Uncued"))
 pd <- position_dodge(0.9)
 dp$l<-as.factor(dp$l)
