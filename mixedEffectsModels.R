@@ -34,6 +34,9 @@ upperLimit <- uppertquartile + H
 lowerLimit <- lowertquartile - H
 dat <- subset(dat, log(t)>=lowerLimit & log(t)<=upperLimit)
 
+#Convert to percentage
+dat$nearPercent <- dat$near/100
+
 #color palette
 cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
@@ -41,13 +44,15 @@ cbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2",
 #Mixed Effects Modeling
 #####################################################################################################################################################################
 #RT
-dat$nearPercent <- dat$near/100
-RTmm <- run_model(brm(log(t) ~ cond+n+nearPercent+l +(1+cond+n+nearPercent+l|id), data=subset(dat), cores=4,  iter = 4000, warmup = 1000, control = list(adapt_delta = 0.99)), modelName = 'RTmm')
 
+RTmm <- run_model(brm(log(t) ~ cond+n+nearPercent+l +(1+cond+n+nearPercent+l|id), data=subset(dat), cores=4,  iter = 4000, warmup = 1000, control = list(adapt_delta = 0.99)), modelName = 'RTmm')
 bayes_R2(RTmm)
 fixedTerms <- fixef(RTmm)#Look at fixed terms
 
 #Correct
-correctmm <- run_model(brm(correct ~ cond+n+nearPercent*l +(1+cond+n+nearPercent*l|id), data=subset(dat),family = "bernoulli", cores=4,  iter = 4000, warmup = 1000, control = list(adapt_delta = 0.99)), modelName = 'correctmm')
+correctmm <- run_model(brm(correct ~ cond+n+nearPercent+l +(1+cond+n+nearPercent+l|id), data=subset(dat),family = "bernoulli", cores=4,  iter = 4000, warmup = 1000, control = list(adapt_delta = 0.99)), modelName = 'correctmm')
+bayes_R2(correctmm)
+fixedTerms <- fixef(correctmm)#Look at fixed terms
 
-tab_model(distanceRewardMM, distanceInitialMM)
+#table for results
+tab_model(RTmm, correctmm)
